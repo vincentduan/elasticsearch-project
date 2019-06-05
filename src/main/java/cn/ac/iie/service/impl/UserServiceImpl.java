@@ -26,12 +26,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private Client client;
 
+    private static String INDEX_NAME = "user";
+
     @Override
-    public IndexResponse addUser(String indexName, User user) {
+    public IndexResponse addUser(User user) {
 //        IndexResponse indexResponse = client.prepareIndex("user", "type").setSource(jsonObject).get();
         IndexResponse indexResponse = null;
         try {
-            indexResponse = client.prepareIndex("user", "type").setSource(jsonBuilder().startObject().field("userName", user.getUserName()).field("passwordEn", user.getPasswordEn()).endObject()).get();
+            indexResponse = client.prepareIndex(INDEX_NAME, "type").setSource(jsonBuilder().startObject().field("userName", user.getUserName()).field("passwordEn", user.getPasswordEn()).endObject()).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,12 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UpdateResponse updateUser(String indexName, User user) {
-        SearchResponse searchResponse = client.prepareSearch("user").setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", user.getUserName()))).setSize(1).get();
+    public UpdateResponse updateUser(User user) {
+        SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", user.getUserName()))).setSize(1).get();
         String docId = searchResponse.getHits().getHits()[0].getId();
         UpdateResponse updateResponse = null;
         try {
-            updateResponse = client.prepareUpdate("user", "type", docId + "").setDoc(jsonBuilder().startObject().field("userName", user.getUserName()).field("passwordEn", user.getPasswordEn()).endObject()).get();
+            updateResponse = client.prepareUpdate(INDEX_NAME, "type", docId + "").setDoc(jsonBuilder().startObject().field("userName", user.getUserName()).field("passwordEn", user.getPasswordEn()).endObject()).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,15 +55,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DeleteResponse deleteByUserName(String userName) {
-        SearchResponse searchResponse = client.prepareSearch("user").setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
+        SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
         String docId = searchResponse.getHits().getHits()[0].getId();
-        DeleteResponse response = client.prepareDelete("user", "type", docId).get();
+        DeleteResponse response = client.prepareDelete(INDEX_NAME, "type", docId).get();
         return response;
     }
 
     @Override
     public User getByUserName(String userName) {
-        SearchResponse searchResponse = client.prepareSearch("user").setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
+        SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
         SearchHit[] hits = searchResponse.getHits().getHits();
         if (hits.length == 0) {
             return null;
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUserList() {
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch("user").setQuery(QueryBuilders.boolQuery()).setSize(0);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery()).setSize(0);
         int totalHits = Integer.parseInt(searchRequestBuilder.get().getHits().totalHits + "");
         SearchResponse searchResponse = searchRequestBuilder.setSize(totalHits).get();
         SearchHit[] hits = searchResponse.getHits().getHits();

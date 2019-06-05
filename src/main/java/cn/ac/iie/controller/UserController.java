@@ -19,13 +19,14 @@ public class UserController {
 
     @PostMapping("/user/add")
     public Object addUser(User user) {
-        IndexResponse indexResponse = userService.addUser("user", user);
+        System.out.println(user);
+        IndexResponse indexResponse = userService.addUser(user);
         return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
     }
 
     @PostMapping("/user/update")
     public Object updateUser(User user) {
-        UpdateResponse updateResponse = userService.updateUser("user", user);
+        UpdateResponse updateResponse = userService.updateUser(user);
         System.out.println(updateResponse.getResult().toString());
         return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
     }
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}")
-    public Object addUser(@PathVariable("userName") String userName) {
+    public Object getUser(@PathVariable("userName") String userName) {
         User user = userService.getByUserName(userName);
         return user == null ? new ResponseResult("500", "no such user") : new ResponseResult("200", "success", user);
     }
