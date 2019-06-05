@@ -18,14 +18,12 @@ public class MyConfiguration {
     @Autowired
     private EsConf esConf;
 
-    @Bean
+    @Bean(name = "EsClient")
     public Client createClient() {
-//        System.out.println(esConf);
         Settings settings = Settings.builder()
                 .put("cluster.name", esConf.getClusterName()).build();
         Client client = new PreBuiltTransportClient(settings);
         for (String ip : esConf.getIps()) {
-            System.out.println(ip);
             try {
                 // es 6.2.3版本
                 ((TransportClient) client)
