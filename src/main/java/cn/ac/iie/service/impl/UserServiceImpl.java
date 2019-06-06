@@ -1,6 +1,7 @@
 package cn.ac.iie.service.impl;
 
 import cn.ac.iie.bean.User;
+import cn.ac.iie.exception.MyException;
 import cn.ac.iie.service.UserService;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -56,9 +57,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public DeleteResponse deleteByUserName(String userName) {
         SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
-        String docId = searchResponse.getHits().getHits()[0].getId();
-        DeleteResponse response = client.prepareDelete(INDEX_NAME, "type", docId).get();
-        return response;
+        if (searchResponse.getHits().getHits().length > 0) {
+            String docId = searchResponse.getHits().getHits()[0].getId();
+            DeleteResponse response = client.prepareDelete(INDEX_NAME, "type", docId).get();
+            return response;
+        } else {
+            throw new MyException(" The user " + userName + " don't exists");
+        }
+
     }
 
     @Override
@@ -74,19 +80,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUserList() {
+    public List<String> getUserList() {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery()).setSize(0);
         int totalHits = Integer.parseInt(searchRequestBuilder.get().getHits().totalHits + "");
         SearchResponse searchResponse = searchRequestBuilder.setSize(totalHits).get();
         SearchHit[] hits = searchResponse.getHits().getHits();
-        List<User> userList = new LinkedList<>();
-        for (SearchHit hit: hits) {
+        List<String> userList = new LinkedList<>();
+        for (SearchHit hit : hits) {
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             String userName = sourceAsMap.get("userName").toString();
-            String passwordEn = sourceAsMap.get("passwordEn").toString();
-            userList.add(new User(userName, passwordEn));
+            userList.add(userName);
         }
         return userList;
+    }
+
+    @Override
+    public boolean existUser(String userName) {
+        SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).get();
+        return searchResponse.getHits().totalHits > 0 ? true : false;
     }
 
 

@@ -42,6 +42,12 @@ public interface UserService {
      * 得到用户列表
      * @return
      */
-    List<User> getUserList();
+    List<String> getUserList();
 
+    /**
+     * 判断用户是否存在
+     * @param userName
+     * @return
+     */
+    boolean existUser(String userName);
 }

@@ -16,13 +16,15 @@ public class PrivilegesController {
     @Autowired
     private PrivilegesService privilegesService;
 
-    @PostMapping("/privileges/add")
+    private static final String URI = "/privileges";
+
+    @PostMapping("/privileges")
     public Object addPrivileges(@RequestBody Privileges privileges) {
         IndexResponse indexResponse = privilegesService.addPrivileges(privileges);
         return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
     }
 
-    @PostMapping("/privileges/update")
+    @PutMapping("/privileges")
     public Object updatePrivileges(@RequestBody Privileges privileges) {
         UpdateResponse updateResponse = privilegesService.updatePrivileges(privileges);
         return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");

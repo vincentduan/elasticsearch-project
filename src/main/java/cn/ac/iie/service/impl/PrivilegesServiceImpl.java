@@ -1,7 +1,6 @@
 package cn.ac.iie.service.impl;
 
 import cn.ac.iie.bean.Privileges;
-import cn.ac.iie.bean.User;
 import cn.ac.iie.service.PrivilegesService;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;

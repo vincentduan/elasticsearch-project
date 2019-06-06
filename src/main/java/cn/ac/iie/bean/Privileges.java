@@ -14,6 +14,9 @@ public class Privileges {
         this.authorityApps = authorityApps;
     }
 
+    public Privileges() {
+    }
+
     @Override
     public String toString() {
         return "Privileges{" +
