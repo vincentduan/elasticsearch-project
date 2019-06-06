@@ -23,14 +23,14 @@ public class UserController {
 
     private static final String URI = "/usr";
 
-    @PostMapping("/user/add")
+    @PostMapping("/users")
     public Object addUser(User user) {
         System.out.println(user);
         IndexResponse indexResponse = userService.addUser(user);
         return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
     }
 
-    @PostMapping("/user/update")
+    @PutMapping("/users")
     public Object updateUser(User user) {
         UpdateResponse updateResponse = userService.updateUser(user);
         System.out.println(updateResponse.getResult().toString());
