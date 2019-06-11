@@ -11,6 +11,8 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class UserServiceImpl implements UserService {
     private Client client;
 
     private static String INDEX_NAME = "user";
+
+    private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public IndexResponse addUser(User user) {
