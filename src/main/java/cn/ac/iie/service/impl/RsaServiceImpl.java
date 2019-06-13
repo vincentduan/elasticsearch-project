@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
-import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -28,9 +27,10 @@ public class RsaServiceImpl implements RsaService {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private Md5TokenGenerator md5TokenGenerator;
 
     @Override
     public String getPublicKey() throws NoSuchAlgorithmException {
@@ -47,7 +47,8 @@ public class RsaServiceImpl implements RsaService {
         String privateKey = redisTemplate.opsForValue().get(publicKey);
         redisTemplate.opsForValue().getOperations().delete(publicKey);
         String passwordDe = decrypt(passwordEn, privateKey);
-        passwordDe = md5_32(passwordDe);
+        passwordDe = md5TokenGenerator.generate(passwordDe);
+        ;
         String realPassword = userService.getByUserName(userName).getPasswordEn();
         return realPassword.equals(passwordDe);
     }
@@ -57,15 +58,15 @@ public class RsaServiceImpl implements RsaService {
         String privateKey = redisTemplate.opsForValue().get(publicKey);
         redisTemplate.opsForValue().getOperations().delete(publicKey);
         String passwordDe = decrypt(passwordEn, privateKey);
-        passwordDe = md5_32(passwordDe);
-        if(!reset){ // 添加新用户，并设置密码
+        passwordDe = md5TokenGenerator.generate(passwordDe);
+        if (!reset) { // 添加新用户，并设置密码
             User user = userService.getByUserName(userName);
             if (user != null) {
                 throw new MyException(" The userName is already exists");
             }
             IndexResponse indexResponse = userService.addUser(new User(userName, passwordDe));
             return indexResponse;
-        }else { // 旧用户修改密码
+        } else { // 旧用户修改密码
             User user = userService.getByUserName(userName);
             if (user == null) {
                 throw new MyException(" The userName don't exists");
@@ -75,32 +76,6 @@ public class RsaServiceImpl implements RsaService {
         }
 
 
-    }
-
-    public String md5_32(String inputStr) {
-        String outputStr = "";
-
-        try {
-            char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            byte[] digest = md5.digest(inputStr.getBytes("utf-8"));
-            int j = digest.length;
-            char strArr[] = new char[j * 2];
-            int k = 0;
-            for (int i = 0; i < j; i++) {
-                byte byte0 = digest[i];
-                strArr[k++] = hexDigits[byte0 >>> 4 & 0xf];
-                strArr[k++] = hexDigits[byte0 & 0xf];
-            }
-            for (char c : strArr) {
-                outputStr = outputStr + c;
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return outputStr;
     }
 
 
