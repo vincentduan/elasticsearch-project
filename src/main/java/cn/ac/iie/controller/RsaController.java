@@ -1,7 +1,8 @@
 package cn.ac.iie.controller;
 
 import cn.ac.iie.service.RsaService;
-import cn.ac.iie.web.ResponseResult;
+import cn.ac.iie.utils.ResponseVOUtil;
+import cn.ac.iie.vo.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -19,17 +20,17 @@ public class RsaController {
     @GetMapping(value = "/rsa/getPublicKey")
     public Object getPublicKey () {
         try {
-            return new ResponseResult("200","success", rsaService.getPublicKey());
+            return ResponseVOUtil.success(rsaService.getPublicKey());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return new ResponseResult("500","failed", e.getMessage());
+            logger.info(e.getMessage());
+            return ResponseVOUtil.failed( e.getMessage());
         }
     }
 
     @PostMapping(value = "/rsa/verifyPassword")
     public Object verifyPassword(@RequestParam("userName") String userName, @RequestParam("passwordEn") String passwordEn, @RequestParam("publicKey") String publicKey) throws Exception {
         boolean verifyPassword = rsaService.verifyPassword(userName, passwordEn, publicKey);
-        return new ResponseResult("200", "success", verifyPassword);
+        return ResponseVOUtil.success(verifyPassword);
     }
 
     @PutMapping(value = "/rsa/setPassword")
@@ -37,9 +38,10 @@ public class RsaController {
         String result = null;
         try {
             result = rsaService.setPassword(userName, passwordEn, publicKey, reset).getResult().toString();
-            return new ResponseResult("200", "success", result);
+            return ResponseVOUtil.success(result);
         } catch (Exception e) {
-            return new ResponseResult("500", "failed", e.getMessage());
+            logger.info(e.getMessage());
+            return ResponseVOUtil.success(e.getMessage());
         }
 
     }

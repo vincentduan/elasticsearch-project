@@ -1,10 +1,14 @@
-package cn.ac.iie.web;
+package cn.ac.iie.vo;
+
 
 public class ResponseResult {
 
     private String code;
     private String message;
     private Object data;
+
+    public ResponseResult() {
+    }
 
     public ResponseResult(String code, String message) {
         this.code = code;

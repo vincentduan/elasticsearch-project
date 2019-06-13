@@ -3,7 +3,9 @@ package cn.ac.iie.controller;
 import cn.ac.iie.bean.User;
 import cn.ac.iie.service.PrivilegesService;
 import cn.ac.iie.service.UserService;
-import cn.ac.iie.web.ResponseResult;
+import cn.ac.iie.utils.ResponseVOUtil;
+import cn.ac.iie.vo.ResponseResult;
+import org.apache.tomcat.util.http.ResponseUtil;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateResponse;
@@ -21,7 +23,7 @@ public class UserController {
     @Autowired
     private PrivilegesService privilegesService;
 
-    private static final String URI = "/usr";
+    private static final String URI = "/user";
 
     @PostMapping("/users")
     public Object addUser(User user) {
@@ -39,29 +41,30 @@ public class UserController {
 
     @DeleteMapping("/user/{userName}")
     public Object deleteUser(@PathVariable("userName") String userName) {
+        // 删除用户
         DeleteResponse user_deleteResponse = userService.deleteByUserName(userName);
         // 删除权限
         DeleteResponse pri_deleteResponse1 = privilegesService.deleteByUserName(userName);
-        String result = (user_deleteResponse.getResult().toString()).equals(pri_deleteResponse1.getResult().toString()) && "DELETED" .equals(user_deleteResponse.getResult().toString()) ? "success" : "failed";
+        String result = (user_deleteResponse.getResult().toString()).equals(pri_deleteResponse1.getResult().toString()) && "DELETED".equals(user_deleteResponse.getResult().toString()) ? "success" : "failed";
         return result;
     }
 
     @GetMapping("/user/{userName}")
     public Object getUser(@PathVariable("userName") String userName) {
         User user = userService.getByUserName(userName);
-        return user == null ? new ResponseResult("200", "no such user") : new ResponseResult("200", "success", user);
+        return user == null ? ResponseVOUtil.success("no such user") : ResponseVOUtil.success(user);
     }
 
     @GetMapping("/exist/{userName}")
     public Object existUser(@PathVariable("userName") String userName) {
         boolean result = userService.existUser(userName);
-        return new ResponseResult("200", "success", result);
+        return ResponseVOUtil.success(result);
     }
 
     @GetMapping("/users")
     public Object list() {
         List<String> userList = userService.getUserList();
-        return new ResponseResult("200", "success", userList);
+        return ResponseVOUtil.success(userList);
     }
 
 }

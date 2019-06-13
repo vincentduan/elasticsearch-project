@@ -77,7 +77,7 @@ public class RsaServiceImpl implements RsaService {
 
     }
 
-    private String md5_32(String inputStr) {
+    public String md5_32(String inputStr) {
         String outputStr = "";
 
         try {

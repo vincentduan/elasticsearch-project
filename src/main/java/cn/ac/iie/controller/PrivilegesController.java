@@ -1,9 +1,8 @@
 package cn.ac.iie.controller;
 
 import cn.ac.iie.bean.Privileges;
-import cn.ac.iie.bean.User;
 import cn.ac.iie.service.PrivilegesService;
-import cn.ac.iie.web.ResponseResult;
+import cn.ac.iie.vo.ResponseResult;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateResponse;

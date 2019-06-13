@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new MyException(" The user " + userName + " don't exists");
         }
-
     }
 
     @Override
