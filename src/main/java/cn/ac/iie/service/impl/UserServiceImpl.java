@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
         SearchHit[] hits = searchResponse.getHits().getHits();
         if (hits.length == 0) {
-            return null;
+            throw new MyException(" The user " + userName + " don't exists");
         } else {
             String passwordEn = hits[0].getSourceAsMap().get("passwordEn").toString();
             return new User(userName, passwordEn);

@@ -48,7 +48,6 @@ public class RsaServiceImpl implements RsaService {
         redisTemplate.opsForValue().getOperations().delete(publicKey);
         String passwordDe = decrypt(passwordEn, privateKey);
         passwordDe = md5TokenGenerator.generate(passwordDe);
-        ;
         String realPassword = userService.getByUserName(userName).getPasswordEn();
         return realPassword.equals(passwordDe);
     }

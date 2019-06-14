@@ -29,14 +29,14 @@ public class UserController {
     public Object addUser(User user) {
         System.out.println(user);
         IndexResponse indexResponse = userService.addUser(user);
-        return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
+        return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult(200, "success") : new ResponseResult(500, "failed");
     }
 
     @PutMapping("/users")
     public Object updateUser(User user) {
         UpdateResponse updateResponse = userService.updateUser(user);
         System.out.println(updateResponse.getResult().toString());
-        return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
+        return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult(200, "success") : new ResponseResult(500, "failed");
     }
 
     @DeleteMapping("/user/{userName}")

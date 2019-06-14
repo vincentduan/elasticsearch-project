@@ -20,26 +20,26 @@ public class PrivilegesController {
     @PostMapping("/privileges")
     public Object addPrivileges(@RequestBody Privileges privileges) {
         IndexResponse indexResponse = privilegesService.addPrivileges(privileges);
-        return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
+        return "CREATED".equals(indexResponse.getResult().toString()) ? new ResponseResult(200, "success") : new ResponseResult(500, "failed");
     }
 
     @PutMapping("/privileges")
     public Object updatePrivileges(@RequestBody Privileges privileges) {
         UpdateResponse updateResponse = privilegesService.updatePrivileges(privileges);
-        return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
+        return ("UPDATED".equals(updateResponse.getResult().toString()) || "NOOP".equals(updateResponse.getResult().toString())) ? new ResponseResult(200, "success") : new ResponseResult(500, "failed");
     }
 
     @DeleteMapping("/privileges/{userName}")
     public Object deletePrivileges(@PathVariable("userName") String userName) {
         DeleteResponse deleteResponse = privilegesService.deleteByUserName(userName);
         System.out.println(deleteResponse.getResult().toString());
-        return "DELETED".equals(deleteResponse.getResult().toString()) ? new ResponseResult("200", "success") : new ResponseResult("500", "failed");
+        return "DELETED".equals(deleteResponse.getResult().toString()) ? new ResponseResult(200, "success") : new ResponseResult(500, "failed");
     }
 
     @GetMapping("/privileges/{userName}")
     public Object getUser(@PathVariable("userName") String userName) {
         Privileges privileges = privilegesService.getByUserName(userName);
-        return privileges == null ? new ResponseResult("500", "no such user") : new ResponseResult("200", "success", privileges);
+        return privileges == null ? new ResponseResult(500, "no such user") : new ResponseResult(200, "success", privileges);
     }
 
 }

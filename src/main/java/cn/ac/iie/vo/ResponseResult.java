@@ -3,29 +3,29 @@ package cn.ac.iie.vo;
 
 public class ResponseResult {
 
-    private String code;
+    private int code;
     private String message;
     private Object data;
 
     public ResponseResult() {
     }
 
-    public ResponseResult(String code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public ResponseResult(String code, String message, Object data) {
+    public ResponseResult(int code, String message, Object data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public String getCode() {
+    public ResponseResult(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
@@ -48,11 +48,9 @@ public class ResponseResult {
     @Override
     public String toString() {
         return "ResponseResult{" +
-                "code='" + code + '\'' +
+                "code=" + code +
                 ", message='" + message + '\'' +
-                ", data='" + data + '\'' +
+                ", data=" + data +
                 '}';
     }
-
-
 }
