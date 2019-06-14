@@ -1,0 +1,35 @@
+PUT privileges
+{
+  "mappings": {
+    "type": {
+      "properties": {
+        "userName": {
+          "type": "keyword"
+        },
+        "authorityType": {
+          "type": "keyword"
+        },
+        "authorityApps": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+
+PUT user
+{
+  "mappings": {
+    "type": {
+      "properties": {
+        "userName": {
+          "type": "keyword"
+        },
+        "passwordEn": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+
