@@ -5,6 +5,7 @@ import cn.ac.iie.authorization.manager.TokenManager;
 import cn.ac.iie.authorization.model.TokenModel;
 import cn.ac.iie.bean.User;
 import cn.ac.iie.exception.MyException;
+import cn.ac.iie.service.RsaService;
 import cn.ac.iie.service.UserService;
 import cn.ac.iie.utils.ResponseVOUtil;
 import cn.ac.iie.vo.ResponseResult;
@@ -23,17 +24,25 @@ public class TokenController {
     UserService userService;
     @Autowired
     TokenManager tokenManager;
+    @Autowired
+    RsaService rsaService;
 
     @PostMapping
-    public ResponseResult login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+    public ResponseResult login(@RequestParam("userName") String userName, @RequestParam("passwordEn") String passwordEn, @RequestParam("publicKey") String publicKey) {
         try{
             User user = userService.getByUserName(userName);
-            if(!user.getPasswordEn().equals(password)){
+            /*if(!user.getPasswordEn().equals(password)){
                 return ResponseVOUtil.error("wrong password");
+            }*/
+            if(rsaService.verifyPassword(userName, passwordEn, publicKey)) {
+                TokenModel model = tokenManager.createToken(userName);
+                return ResponseVOUtil.success(model);
+            } else {
+                return ResponseVOUtil.error("wrong username or password");
             }
-            TokenModel model = tokenManager.createToken(user.getUserName());
-            return ResponseVOUtil.success(model);
         } catch (MyException e) {
+            return ResponseVOUtil.exception(e.getMessage());
+        } catch (Exception e) {
             return ResponseVOUtil.exception(e.getMessage());
         }
     }

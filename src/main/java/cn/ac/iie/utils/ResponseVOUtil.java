@@ -1,12 +1,13 @@
 package cn.ac.iie.utils;
 
 import cn.ac.iie.vo.ResponseResult;
+import org.springframework.http.HttpStatus;
 
 public class ResponseVOUtil {
 
     public static ResponseResult success(Object data) {
         ResponseResult responseResult = new ResponseResult();
-        //responseResult.setCode(HttpStatus.OK);
+        responseResult.setCode(200);
         responseResult.setMessage("success");
         responseResult.setData(data);
         return responseResult;
@@ -22,7 +23,7 @@ public class ResponseVOUtil {
 
     public static ResponseResult exception(String message) {
         ResponseResult responseResult = new ResponseResult();
-        responseResult.setCode(501);
+        responseResult.setCode(502);
         responseResult.setMessage(message);
         return responseResult;
     }
@@ -34,4 +35,11 @@ public class ResponseVOUtil {
         return responseResult;
     }
 
+    public static ResponseResult UNAUTHORIZED() {
+        ResponseResult responseResult = new ResponseResult();
+        responseResult.setCode(401);
+        responseResult.setMessage("failed");
+        responseResult.setData(HttpStatus.UNAUTHORIZED);
+        return responseResult;
+    }
 }

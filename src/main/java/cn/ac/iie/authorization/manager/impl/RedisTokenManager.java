@@ -34,7 +34,7 @@ public class RedisTokenManager implements TokenManager {
         if (token == null || !token.equals(model.getToken())) {
             return false;
         }
-        //如果验证成功，说明此用户进行了一次有效操作，延长token的过期时间
+        // 如果验证成功，说明此用户进行了一次有效操作，延长token的过期时间
         // redisTemplate.boundValueOps(model.getUserName()).expire(Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
         redisTemplate.boundValueOps(model.getUserName()).expire(Constants.TOKEN_EXPIRES_SECOND, TimeUnit.SECONDS);
         return true;
@@ -45,7 +45,7 @@ public class RedisTokenManager implements TokenManager {
         if (authentication == null || authentication.length() == 0) {
             return null;
         }
-        String[] param = authentication.split("_");
+        String[] param = authentication.split("#");
         if (param.length != 2) {
             return null;
         }

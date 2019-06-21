@@ -1,5 +1,6 @@
 package cn.ac.iie.controller;
 
+import cn.ac.iie.authorization.annotation.Authorization;
 import cn.ac.iie.service.RsaService;
 import cn.ac.iie.utils.ResponseVOUtil;
 import cn.ac.iie.vo.ResponseResult;
@@ -27,13 +28,15 @@ public class RsaController {
         }
     }
 
-    @PostMapping(value = "/rsa/verifyPassword")
+    @PostMapping(value = "/userManagement/rsa/verifyPassword")
+    @Authorization
     public Object verifyPassword(@RequestParam("userName") String userName, @RequestParam("passwordEn") String passwordEn, @RequestParam("publicKey") String publicKey) throws Exception {
         boolean verifyPassword = rsaService.verifyPassword(userName, passwordEn, publicKey);
         return ResponseVOUtil.success(verifyPassword);
     }
 
-    @PutMapping(value = "/rsa/setPassword")
+    @PutMapping(value = "/userManagement/rsa/setPassword")
+    @Authorization
     public Object setPassword (@RequestParam("userName") String userName, @RequestParam("passwordEn") String passwordEn, @RequestParam("publicKey") String publicKey, @RequestParam("reset") boolean reset) {
         String result = null;
         try {

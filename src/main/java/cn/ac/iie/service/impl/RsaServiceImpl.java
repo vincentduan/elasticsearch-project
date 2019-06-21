@@ -32,52 +32,6 @@ public class RsaServiceImpl implements RsaService {
     @Autowired
     private Md5TokenGenerator md5TokenGenerator;
 
-    @Override
-    public String getPublicKey() throws NoSuchAlgorithmException {
-        //生成公钥和私钥
-        Map<String, String> keyMap = genKeyPair();
-        String publicKey = keyMap.get("publicKey");
-        String privateKey = keyMap.get("privateKey");
-        redisTemplate.opsForValue().set(publicKey, privateKey, 10, TimeUnit.SECONDS);
-        return publicKey;
-    }
-
-    @Override
-    public boolean verifyPassword(String userName, String passwordEn, String publicKey) throws Exception {
-        String privateKey = redisTemplate.opsForValue().get(publicKey);
-        redisTemplate.opsForValue().getOperations().delete(publicKey);
-        String passwordDe = decrypt(passwordEn, privateKey);
-        passwordDe = md5TokenGenerator.generate(passwordDe);
-        String realPassword = userService.getByUserName(userName).getPasswordEn();
-        return realPassword.equals(passwordDe);
-    }
-
-    @Override
-    public DocWriteResponse setPassword(String userName, String passwordEn, String publicKey, boolean reset) throws Exception {
-        String privateKey = redisTemplate.opsForValue().get(publicKey);
-        redisTemplate.opsForValue().getOperations().delete(publicKey);
-        String passwordDe = decrypt(passwordEn, privateKey);
-        passwordDe = md5TokenGenerator.generate(passwordDe);
-        if (!reset) { // 添加新用户，并设置密码
-            User user = userService.getByUserName(userName);
-            if (user != null) {
-                throw new MyException(" The userName is already exists");
-            }
-            IndexResponse indexResponse = userService.addUser(new User(userName, passwordDe));
-            return indexResponse;
-        } else { // 旧用户修改密码
-            User user = userService.getByUserName(userName);
-            if (user == null) {
-                throw new MyException(" The userName don't exists");
-            }
-            UpdateResponse updateResponse = userService.updateUser(new User(userName, passwordDe));
-            return updateResponse;
-        }
-
-
-    }
-
-
     /**
      * 随机生成密钥对
      *
@@ -142,6 +96,54 @@ public class RsaServiceImpl implements RsaService {
         cipher.init(Cipher.DECRYPT_MODE, priKey);
         String outStr = new String(cipher.doFinal(inputByte));
         return outStr;
+    }
+
+    @Override
+    public String getPublicKey() throws NoSuchAlgorithmException {
+        //生成公钥和私钥
+        Map<String, String> keyMap = genKeyPair();
+        String publicKey = keyMap.get("publicKey");
+        String privateKey = keyMap.get("privateKey");
+        redisTemplate.opsForValue().set(publicKey, privateKey, 10, TimeUnit.SECONDS);
+        return publicKey;
+    }
+
+    @Override
+    public boolean verifyPassword(String userName, String passwordEn, String publicKey) throws Exception {
+        String privateKey = redisTemplate.opsForValue().get(publicKey);
+        redisTemplate.opsForValue().getOperations().delete(publicKey);
+        String passwordDe = decrypt(passwordEn, privateKey);
+        passwordDe = md5TokenGenerator.generate(passwordDe);
+        if (userService.getByUserName(userName) == null) {
+            return false;
+        }
+        String realPassword = userService.getByUserName(userName).getPasswordEn();
+        return realPassword.equals(passwordDe);
+    }
+
+    @Override
+    public DocWriteResponse setPassword(String userName, String passwordEn, String publicKey, boolean reset) throws Exception {
+        String privateKey = redisTemplate.opsForValue().get(publicKey);
+        redisTemplate.opsForValue().getOperations().delete(publicKey);
+        String passwordDe = decrypt(passwordEn, privateKey);
+        passwordDe = md5TokenGenerator.generate(passwordDe);
+        if (!reset) { // 添加新用户，并设置密码
+            User user = userService.getByUserName(userName);
+            if (user != null) {
+                throw new MyException(" The userName is already exists");
+            }
+            IndexResponse indexResponse = userService.addUser(new User(userName, passwordDe));
+            return indexResponse;
+        } else { // 旧用户修改密码
+            User user = userService.getByUserName(userName);
+            if (user == null) {
+                throw new MyException(" The userName don't exists");
+            }
+            UpdateResponse updateResponse = userService.updateUser(new User(userName, passwordDe));
+            return updateResponse;
+        }
+
+
     }
 
 }

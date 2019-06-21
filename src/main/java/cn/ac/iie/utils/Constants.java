@@ -12,9 +12,9 @@ public class Constants {
     public static final int TOKEN_EXPIRES_HOUR = 72;
 
     /**
-     * 测试token有效期（小时）
+     * 测试token有效期（秒）
      */
-    public static final int TOKEN_EXPIRES_SECOND = 60;
+    public static final int TOKEN_EXPIRES_SECOND = 600;
 
     /**
      * 存放Authorization的header字段

@@ -1,6 +1,7 @@
 package cn.ac.iie.service.impl;
 
 import cn.ac.iie.bean.Privileges;
+import cn.ac.iie.exception.MyException;
 import cn.ac.iie.service.PrivilegesService;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -20,10 +21,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 @Service
 public class PrivilegesServiceImpl implements PrivilegesService {
 
+    private static String INDEX_NAME = "privileges";
     @Autowired
     private Client client;
-
-    private static String INDEX_NAME = "privileges";
 
     @Override
     public IndexResponse addPrivileges(Privileges privileges) {
@@ -52,6 +52,9 @@ public class PrivilegesServiceImpl implements PrivilegesService {
     @Override
     public DeleteResponse deleteByUserName(String userName) {
         SearchResponse searchResponse = client.prepareSearch(INDEX_NAME).setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("userName", userName))).setSize(1).get();
+        if (searchResponse.getHits().getHits().length == 0) {
+            throw new MyException("The user " + userName + " don't exists");
+        }
         String docId = searchResponse.getHits().getHits()[0].getId();
         DeleteResponse response = client.prepareDelete(INDEX_NAME, "type", docId).get();
         return response;
@@ -68,5 +71,23 @@ public class PrivilegesServiceImpl implements PrivilegesService {
             List<String> authorityApps = (List<String>) hits[0].getSourceAsMap().get("authorityApps");
             return new Privileges(userName, authorityType, authorityApps);
         }
+    }
+
+    @Override
+    public boolean checkUser(String userName, String uri) {
+        Privileges privileges = this.getByUserName(userName);
+        if (("/userManagement/privileges/" + userName).equals(uri)) {
+            return true;
+        }
+        System.out.println("userName: " + userName + " privileges: " + privileges);
+        List<String> authorityApps = privileges.getAuthorityApps();
+        String[] split = uri.split("/");
+        String pri;
+        if (uri.startsWith("/Taian_Project")) {
+            pri = split[2];
+        } else {
+            pri = split[1];
+        }
+        return authorityApps.contains(pri);
     }
 }

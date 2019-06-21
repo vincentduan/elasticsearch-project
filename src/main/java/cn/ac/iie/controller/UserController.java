@@ -1,5 +1,6 @@
 package cn.ac.iie.controller;
 
+import cn.ac.iie.authorization.annotation.Authorization;
 import cn.ac.iie.bean.User;
 import cn.ac.iie.service.PrivilegesService;
 import cn.ac.iie.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("userManagement")
 public class UserController {
 
     @Autowired
@@ -26,6 +28,7 @@ public class UserController {
     private static final String URI = "/user";
 
     @PostMapping("/users")
+    @Authorization
     public Object addUser(User user) {
         System.out.println(user);
         IndexResponse indexResponse = userService.addUser(user);
@@ -33,6 +36,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
+    @Authorization
     public Object updateUser(User user) {
         UpdateResponse updateResponse = userService.updateUser(user);
         System.out.println(updateResponse.getResult().toString());
@@ -40,6 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{userName}")
+    @Authorization
     public Object deleteUser(@PathVariable("userName") String userName) {
         // 删除用户
         DeleteResponse user_deleteResponse = userService.deleteByUserName(userName);
@@ -50,18 +55,21 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}")
+    @Authorization
     public Object getUser(@PathVariable("userName") String userName) {
         User user = userService.getByUserName(userName);
         return user == null ? ResponseVOUtil.success("no such user") : ResponseVOUtil.success(user);
     }
 
     @GetMapping("/exist/{userName}")
+    @Authorization
     public Object existUser(@PathVariable("userName") String userName) {
         boolean result = userService.existUser(userName);
         return ResponseVOUtil.success(result);
     }
 
     @GetMapping("/users")
+    @Authorization
     public Object list() {
         List<String> userList = userService.getUserList();
         return ResponseVOUtil.success(userList);

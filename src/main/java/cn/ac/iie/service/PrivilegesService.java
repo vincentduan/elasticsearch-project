@@ -14,4 +14,6 @@ public interface PrivilegesService {
     DeleteResponse deleteByUserName(String userName);
 
     Privileges getByUserName(String userName);
+
+    boolean checkUser(String userName, String uri);
 }
